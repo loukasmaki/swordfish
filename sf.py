@@ -14,8 +14,13 @@ import os
 class JoinEventForm(FlaskForm):
     name = StringField('Name', validators=[DataRequired()])
     email = StringField('Email', validators=[DataRequired(), Email()])
-    tournament = SelectMultipleField('Tournaments (hold ctrl to choose more than one)', choices=[("ols", "Open Longsword"), 
-    ("wls", "Women's Longsword"), ("sa", "Sabre"), ("wr", "Wrestling"), ("rad", "Rapier & Dagger"), ("sob", "Sword & Buckler")])
+    tournament = SelectMultipleField('Tournaments (hold ctrl to choose more than one)', choices=[
+                                     ("ols", "Open Longsword"), 
+                                     ("wls", "Women's Longsword"), 
+                                     ("sa", "Sabre"), 
+                                     ("wr", "Wrestling"), 
+                                     ("rad", "Rapier & Dagger"), 
+                                     ("sob", "Sword & Buckler")])
     dateOfBirth = DateField("Date of birth")
     country = SelectField('Country', choices=[("sv","Sweden"),("sf", "Finland"),("rus", "Russia")])
     nextOfKin = StringField("Next of Kin")
@@ -75,11 +80,16 @@ def fights():
 @app.route('/participants', methods=['GET'])
 def participants(event):
     participants = Tournament.query.filter_by(event=event)
+    return render_template('participants.html')
 
 @app.route('/confirmation', methods=['GET'])
 def confirmation():
     print(session.get('tournament'))
     return render_template('confirmation.html')
+
+@app.route('/information', methods=['GET'])
+def information():
+    return render_template('information.html')
 
 
 @app.route('/shop')
@@ -147,7 +157,7 @@ class Event(db.Model):
     maxparticipants = db.Column(db.Integer)
     participants = db.Column(db.Integer)
     sleepingonsite = db.Column(db.Boolean)
-    #tournament = db.relationship('Tournament', backref='tournament')
+    tournament = db.relationship('Tournament', backref='tournament')
     workshop = db.relationship('Workshops', backref='workshop')
     
 
