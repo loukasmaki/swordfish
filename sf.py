@@ -5,8 +5,9 @@ from datetime import datetime
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, SelectMultipleField, DateField, SelectField
 from wtforms.validators import DataRequired, Email
-
 from flask_sqlalchemy import SQLAlchemy
+from flask_mail import Mail
+
 import os
 
 #Forms
@@ -35,10 +36,17 @@ app.config['SECRET_KEY'] = 'ssscccchhuperscheeecreeeet'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://dev:1234@127.0.0.1/sf'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
+app.config['MAIL_SERVER'] = 'smtp.googlemail.com'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME')
+app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD')
+
 db = SQLAlchemy(app)
 
 bootstrap = Bootstrap(app)
 moment = Moment(app)
+mail = Mail(app)
 
 
 #Routes
@@ -75,12 +83,12 @@ def registration():
 
 @app.route('/fights', methods=['GET'])
 def fights():
-    pass
+    return render_template('fights.html')
 
 @app.route('/participants', methods=['GET'])
 def participants(event):
     participants = Tournament.query.filter_by(event=event)
-    return render_template('participants.html')
+    return render_template('participants.html', participants=participants)
 
 @app.route('/confirmation', methods=['GET'])
 def confirmation():
@@ -214,8 +222,14 @@ class Pools(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     tournament = db.Column(db.Integer)
     tournament_id = db.Column(db.Integer, db.ForeignKey('tournament.id'))
+    
+    def __repr__(self):
+        return '<Pools %r>' % self.name
 
 class Ruleset(db.Model):
     __tablename__ = 'ruleset' 
     id = db.Column(db.Integer, primary_key=True)
+
+    def __repr__(self):
+        return '<Ruleset %r>' % self.name
 
