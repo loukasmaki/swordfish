@@ -6,7 +6,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, SelectMultipleField, DateField, SelectField
 from wtforms.validators import DataRequired, Email
 from flask_sqlalchemy import SQLAlchemy
-from flask_mail import Mail
+from flask_mail import Mail, Message
 
 import os
 
@@ -42,11 +42,14 @@ app.config['MAIL_USE_TLS'] = True
 app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME')
 app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD')
 
+app.config['EVENT_MAIL_SUBJECT_PREFIX'] = "[Swordfish]"
+app.config['EVENT_MAIL_SENDER'] = 'Event Admin <devporco@gmail.com>'
+
 db = SQLAlchemy(app)
 
 bootstrap = Bootstrap(app)
-moment = Moment(app)
 mail = Mail(app)
+moment = Moment(app)
 
 
 #Routes
@@ -233,3 +236,12 @@ class Ruleset(db.Model):
     def __repr__(self):
         return '<Ruleset %r>' % self.name
 
+# Mail
+def send_email(to, subject, template, **kwargs):
+    msg = Message(app.config['EVENT_MAI_SUBJECT_PREFIX'] + subject,
+            sender=app.config['EVENT_MAIL_SENDER'], recipients=[to])
+    msg.body = render_template(template + '.txt', **kwargs)
+    msg.html = (template + '.html', **kwargs)
+    mail.send(msg)
+
+# 
