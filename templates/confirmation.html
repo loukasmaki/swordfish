@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block title %}You are registered!{% endblock %}
+
+
+{% block page_content %}
+<div class="page-header">
+    <h1>You are now registered!</h1>
+</div>
+<h2>Reciept</h2>
+<p>Order number: #00001</p>
+<p>{{ session.get('name') }}</p>
+<p>{{ session.get('email') }}</p>
+<p>{{ session.get('tournament') }}</p>
+{% endblock %}

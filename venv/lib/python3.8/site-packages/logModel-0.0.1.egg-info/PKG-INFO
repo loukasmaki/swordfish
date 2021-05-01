@@ -1,0 +1,10 @@
+Metadata-Version: 1.0
+Name: logModel
+Version: 0.0.1
+Summary: Log_Model
+Home-page: UNKNOWN
+Author: donglidunyin
+Author-email: donglidunyin@163.com
+License: UNKNOWN
+Description: args: debug, info, warn, error, critical
+Platform: UNKNOWN
