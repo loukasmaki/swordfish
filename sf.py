@@ -23,7 +23,9 @@ class JoinEventForm(FlaskForm):
                                      ("rad", "Rapier & Dagger"), 
                                      ("sob", "Sword & Buckler")])
     dateOfBirth = DateField("Date of birth")
-    country = SelectField('Country', choices=[("sv","Sweden"),("sf", "Finland"),("rus", "Russia")])
+    country = SelectField('Country', choices=[("sv","Sweden"),
+                                              ("sf", "Finland"),
+                                              ("rus", "Russia")])
     nextOfKin = StringField("Next of Kin")
     nextOfKinPhoneEmail = StringField("Next of kin phone and/or email")
     submit = SubmitField('Submit')
@@ -73,7 +75,9 @@ def registration():
         session['country'] = form.country.data        
         session['nextOfKin'] = form.nextOfKin.data
         session['nextOfKinPhoneEmail'] = form.nextOfKinPhoneEmail.data
-        return redirect(url_for('confirmation'))        
+
+        #user = 
+        return redirect(url_for('confirmation'))
 
     return render_template('registration.html', form=form, 
                             name=session.get('name'), 
@@ -122,6 +126,12 @@ def internal_server_error(e):
 
 #Database
 
+orders_items = db.Table('orders_items', 
+    db.Column('order_id', db.Integer, db.ForeignKey('order.id'), primary_key=True),
+    db.Column('item_id', db.Integer, db.ForeignKey('item.id'), primary_key=True)
+)
+
+
 class Role(db.Model):
     __tablename__ = 'roles'
     id = db.Column(db.Integer, primary_key=True)
@@ -132,7 +142,7 @@ class Role(db.Model):
         return '<Role %r>' % self.name
 
 class User(db.Model):
-    __tablename__ = 'users'
+    __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), unique=True, index=True)
     email = db.Column(db.String(64), unique=True)
@@ -140,16 +150,31 @@ class User(db.Model):
     nextofkin = db.Column(db.String(64), nullable=True)
     nextofkinphoneemail = db.Column(db.String(64), nullable=True)
     role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
-
+    
     order = db.relationship('Order', backref='user')
+
 
         
 
     def __repr__(self):
         return '<User %r>' % self.username
 
+class Event(db.Model):
+    __tablename__ = 'event'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(64), unique=True)
+    maxparticipants = db.Column(db.Integer)
+    participants = db.Column(db.Integer)
+    sleepingonsite = db.Column(db.Boolean)
+    tournament = db.relationship('Tournament', backref='event')
+    workshop = db.relationship('Workshops', backref='event')
+    
+
+    def __repr__(self):
+        return '<Event %r>' % self.name
+
 class Tournament(db.Model):
-    __tablename__ = 'tournaments'
+    __tablename__ = 'tournament'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), unique=True)
     pools = db.Column(db.Integer)
@@ -161,19 +186,7 @@ class Tournament(db.Model):
     def __repr__(self):
         return '<Tournament %r>' % self.name
 
-class Event(db.Model):
-    __tablename__ = 'events'
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(64), unique=True)
-    maxparticipants = db.Column(db.Integer)
-    participants = db.Column(db.Integer)
-    sleepingonsite = db.Column(db.Boolean)
-    tournament = db.relationship('Tournament', backref='tournament')
-    workshop = db.relationship('Workshops', backref='workshop')
-    
 
-    def __repr__(self):
-        return '<Event %r>' % self.name
 
 class Workshops(db.Model):
     __tablename__ = 'workshops'
@@ -197,8 +210,8 @@ class Instructors(db.Model):
         return '<Instructor %r>' % self.name
 
 
-class Merch(db.Model):
-    __tablename__ = 'merch'
+class Item(db.Model):
+    __tablename__ = 'item'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), unique=True)
     productinfo = db.Column(db.Text)
@@ -210,12 +223,15 @@ class Merch(db.Model):
         return '<Merch %r>' % self.name    
 
 class Orders(db.Model):
-    __tablename__ = 'orders'
+    __tablename__ = 'order'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), unique=True)
+    items = db.relationship('Item', secondary=orders_items, lazy='subquery', backref=db.backref('orders', lazy=True))
     total = db.Column(db.Float)
+    registration_order = db.Column(db.Boolean, default=False)
     event_id = db.Column(db.Integer, db.ForeignKey('event.id'))
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+
 
     def __repr__(self):
         return '<Order %r>' % self.name
@@ -236,7 +252,8 @@ class Ruleset(db.Model):
     def __repr__(self):
         return '<Ruleset %r>' % self.name
 
-# Mail
+#Functions
+## Mail
 def send_email(to, subject, template, **kwargs):
     msg = Message(app.config['EVENT_MAI_SUBJECT_PREFIX'] + subject,
             sender=app.config['EVENT_MAIL_SENDER'], recipients=[to])

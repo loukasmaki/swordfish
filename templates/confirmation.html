@@ -11,5 +11,7 @@
 <p>Order number: #00001</p>
 <p>{{ session.get('name') }}</p>
 <p>{{ session.get('email') }}</p>
-<p>{{ session.get('tournament') }}</p>
+<p>{{ session.get('tournament' ) }}
+<p>Email sent! to {{ session.get('email') }. Check your inbox!}</p>
+</p>
 {% endblock %}
