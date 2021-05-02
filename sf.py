@@ -241,7 +241,7 @@ def send_email(to, subject, template, **kwargs):
     msg = Message(app.config['EVENT_MAI_SUBJECT_PREFIX'] + subject,
             sender=app.config['EVENT_MAIL_SENDER'], recipients=[to])
     msg.body = render_template(template + '.txt', **kwargs)
-    msg.html = (template + '.html', **kwargs)
+    msg.html = render_template(template + '.html', **kwargs)
     mail.send(msg)
 
 # 
