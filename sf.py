@@ -7,6 +7,7 @@ from wtforms import StringField, SubmitField, SelectMultipleField, DateField, Se
 from wtforms.validators import DataRequired, Email
 from flask_sqlalchemy import SQLAlchemy
 from flask_mail import Mail, Message
+from threading import Thread
 
 import os
 
@@ -261,11 +262,18 @@ class Ruleset(db.Model):
 
 #Functions
 ## Mail
+
+def send_async_email(app, msg):
+    with app.app_context():
+        mail.send(msg)
+
 def send_email(to, subject, template, **kwargs):
     msg = Message(app.config['EVENT_MAI_SUBJECT_PREFIX'] + subject,
             sender=app.config['EVENT_MAIL_SENDER'], recipients=[to])
     msg.body = render_template(template + '.txt', **kwargs)
     msg.html = render_template(template + '.html', **kwargs)
-    mail.send(msg)
+    thr = Thread(tartget=send_async_email, args=[app, msg])
+    thr.start()
+    return thr
 
 # 
