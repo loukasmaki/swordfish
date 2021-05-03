@@ -76,7 +76,13 @@ def registration():
         session['nextOfKin'] = form.nextOfKin.data
         session['nextOfKinPhoneEmail'] = form.nextOfKinPhoneEmail.data
 
-        #user = 
+        user = User=(name=form.name.data,
+                     email=form.name.data, 
+                     tournament=form.tournament.data, 
+                     dateofbirth=form.dateOfBirth.data, 
+                     country=form.country.data, 
+                     nextofkin=form.nextOfKin.form, 
+                     nextofkinphoneemail=form.nextOfKinPhoneEmail.data)
         return redirect(url_for('confirmation'))
 
     return render_template('registration.html', form=form, 
@@ -147,6 +153,7 @@ class User(db.Model):
     username = db.Column(db.String(64), unique=True, index=True)
     email = db.Column(db.String(64), unique=True)
     country = db.Column(db.String(64))
+    dateofbirth = db.Column(db.Date)
     nextofkin = db.Column(db.String(64), nullable=True)
     nextofkinphoneemail = db.Column(db.String(64), nullable=True)
     role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
