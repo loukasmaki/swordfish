@@ -77,7 +77,7 @@ def registration():
         session['nextOfKin'] = form.nextOfKin.data
         session['nextOfKinPhoneEmail'] = form.nextOfKinPhoneEmail.data
 
-        user = User=(name=form.name.data,
+        user = User(name=form.name.data,
                      email=form.name.data, 
                      tournament=form.tournament.data, 
                      dateofbirth=form.dateOfBirth.data, 
