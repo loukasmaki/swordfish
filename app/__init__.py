@@ -4,6 +4,9 @@ from flask_mail import Mail
 from flask_moment import Moment
 from flask_sqlalchemy import SQLAlchemy
 from config import config
+from dotenv import load_dotenv
+
+load_dotenv()
 
 bootstrap = Bootstrap()
 mail = Mail()

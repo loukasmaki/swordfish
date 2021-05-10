@@ -2,3 +2,4 @@ __pycache__/
 config.sh
 migrations/
 venv/
+.env
