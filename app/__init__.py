@@ -11,6 +11,7 @@ moment = Moment()
 db = SQLAlchemy()
 
 def create_app(config_name):
+    #config_name = 'development'
     app = Flask(__name__)
     app.config.from_object(config[config_name])
     config[config_name].init_app(app)
