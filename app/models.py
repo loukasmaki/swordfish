@@ -30,7 +30,7 @@ class User(db.Model):
     nextofkinphoneemail = db.Column(db.String(64), nullable=True)
     role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
     
-    order = db.relationship('Order', backref='user')
+    #order = db.relationship('Order', backref='user')
 
     @property
     def password(self):
