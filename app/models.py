@@ -1,8 +1,10 @@
 from werkzeug.security import generate_password_hash,  check_password_hash
 from flask_login import UserMixin
-from . import db
+from . import db, login_manager
 
-#Database
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
 
 orders_items = db.Table('orders_items', 
     db.Column('order_id', db.Integer, db.ForeignKey('order.id'), primary_key=True),
