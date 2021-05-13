@@ -48,7 +48,7 @@ class Role(db.Model):
         return self.permissions & perm == perm
 
     @staticmethod
-    def inser_roles():
+    def insert_roles():
         roles = {
             'User' : [Permission.SCHEDULE, Permission.COMMENT],
             'Staff' : [Permission.SCHEDULE, Permission.COMMENT, Permission.REGISTRATION],
