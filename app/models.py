@@ -1,6 +1,6 @@
+from werkzeug.security import generate_password_hash, check_password_hash
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from flask import current_app
-from werkzeug.security import generate_password_hash,  check_password_hash
 from flask_login import UserMixin
 from . import db, login_manager
 
@@ -17,8 +17,8 @@ orders_items = db.Table('orders_items',
 class Role(db.Model):
     __tablename__ = 'roles'
     id = db.Column(db.Integer, primary_key=True)
-    name =db.Column(db.String(64), unique=True)
-    user = db.relationship('User', backref='role')
+    name = db.Column(db.String(64), unique=True)
+    user = db.relationship('User', backref='role', lazy='dynamic')
 
     def __repr__(self):
         return '<Role %r>' % self.name
@@ -26,14 +26,16 @@ class Role(db.Model):
 class User(UserMixin, db.Model):
     __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(64), unique=True, index=True)
     username = db.Column(db.String(64), unique=True, index=True)
+    role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
     password_hash = db.Column(db.String(128))
-    email = db.Column(db.String(64), unique=True)
+    
     #country = db.Column(db.String(64))
     #dateofbirth = db.Column(db.Date)
     #nextofkin = db.Column(db.String(64), nullable=True)
     #nextofkinphoneemail = db.Column(db.String(64), nullable=True)
-    role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
+
     confirmed = db.Column(db.Boolean, default=False)
     
     #order = db.relationship('Order', backref='user')
@@ -65,8 +67,8 @@ class User(UserMixin, db.Model):
         db.session.add(self)
         return True
 
-    def generate_reset_token(self, expitarion):
-        s = Serializer(current_app.config['SECRET_KEY'], expitarion)
+    def generate_reset_token(self, expiration=3600):
+        s = Serializer(current_app.config['SECRET_KEY'], expiration)
         return s.dumps({'reset': self.id}).decode('utf-8')
 
     @staticmethod
@@ -94,7 +96,7 @@ class User(UserMixin, db.Model):
             data = s.loads(token.encode('utf-8'))
         except:
             return False
-        if data.get('change:email') != self.id:
+        if data.get('change_email') != self.id:
             return False
         new_email = data.get('new_email')
         if new_email is None:
@@ -105,7 +107,7 @@ class User(UserMixin, db.Model):
         db.session.add(self)
         return True
 
-        
+
         
 
 
