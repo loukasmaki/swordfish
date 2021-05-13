@@ -9,7 +9,7 @@ class Config:
     MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
     MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
     EVENT_MAIL_SUBJECT_PREFIX = '[Swordfish]'
-    EVENT_MAILS_SENDER = 'Swordfish Admin <swordfish@ghfs.se>'
+    EVENT_MAIL_SENDER = 'Swordfish Admin <devporco@gmail.com>'
     EVENT_ADMIN = os.environ.get('EVENT_ADMIN')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 

@@ -1,6 +1,6 @@
 import os
 import click
-from app import create_app, db
+from app import create_app, db, mail
 from app.models import User, Role
 from flask_migrate import Migrate
 
@@ -9,7 +9,7 @@ migrate = Migrate(app,db)
 
 @app.shell_context_processor
 def make_shell_context():
-    return dict(db=db, User=User, Role=Role)
+    return dict(db=db, User=User, Role=Role, mail=mail)
 
 @app.cli.command()
 #@click.argument('test_names', nargs=1)
