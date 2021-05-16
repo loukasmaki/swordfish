@@ -1,25 +1,29 @@
 {% extends "base.html" %}
 
-{% block title %} Swordfish - {{ user.username.capitalize() }}{% endblock %}
+{% block title %} Swordfish - {{ user.name.capitalize() }}{% endblock %}
 
 
 {% block page_content %}
 <div class="page-header">
-    <h1>Welcome, {{ user.username.capitalize() }}</h1>
+    <h1>Welcome, {{ user.name.capitalize() }}</h1>
     <ul>
-        <li><a href="{{ url_for( 'auth.change_email_request' ) }}">Change Email</a></li>
-        <li><a href="{{ url_for( 'auth.change_password' )}}">Change Password</a></li>
-        <li><a href="{{ url_for( 'main.edit_profile' )}}">Edit Profile</a></li>
-        <li><p>Role: {{ user.role }}</p></li>
+        
+        <li>Role: {{ user.role }}</li>
+        <li>Country: {{ user.country }}</li>
+        <li>Club: {{ user.club }} </li>
         
 
     </ul>
+    {% if user == current_user %}
+    <a class="btn btn-default" href="{{ url_for( 'auth.change_email_request' ) }}">Change Email</a>
+    <a class="btn btn-default" href="{{ url_for( 'auth.change_password' )}}">Change Password</a>
+    <a class="btn btn-default" href="{{ url_for('main.edit_profile') }}">Edit Profile</a>
+    {% endif %}
     {% if current_user.is_administrator() %}
     <a class="btn btn-danger"
         href="{{ url_for('.edit_profile_admin', id=user.id) }}">
         Edit Profile [Admin]
     </a>
     {% endif %}
-
 </div>
 {% endblock %}

@@ -1,13 +1,13 @@
-from app.decorators import admin_required
-from datetime import datetime
 from flask import render_template, session, redirect, url_for, flash
 from flask_login import login_required, current_user
 from . import main
-#from .forms import JoinEventForm
+from .forms import EditProfileAdminForm, EditProfileForm
 from .. import db
 from ..models import User, Role
-from .forms import EditProfileAdminForm, EditProfileForm
+from app.decorators import admin_required
 
+
+from datetime import datetime
 
 @main.route('/', methods=['GET'])
 def index():
@@ -82,7 +82,7 @@ def edit_profile():
         current_user.name = form.name.data
         current_user.country = form.country.data
         current_user.club = form.club.data
-        db.session.add(current._get_current_object())
+        db.session.add(current_user._get_current_object())
         db.session.commit()
         flash('Your profile has been updated.')
         return redirect(url_for('.user', id=current_user.id,))
@@ -108,11 +108,11 @@ def edit_profile_admin(id):
         db.session.commit()
         flash('The profile has been updated')
         return redirect(url_for('.user', id=user.id))
-    user.email = form.email.data
-    user.name = form.name.data
-    user.confirmed = form.confirmed.data
-    user.role = Role.query.get(form.role.data)
-    user.country = form.country.data
-    user.club = form.club.data
-    return render_template('.edit_profile.html', form=form, user=user)
+    form.email.data = user.email
+    form.name.data = user.name
+    form.role.data = user.role_id
+    form.confirmed.data = user.confirmed
+    form.country.data = user.country
+    form.club.data = user.club
+    return render_template('main/edit_profile.html', form=form, user=user)
 

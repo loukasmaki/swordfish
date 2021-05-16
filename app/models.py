@@ -4,10 +4,6 @@ from flask import current_app
 from flask_login import UserMixin, AnonymousUserMixin
 from . import db, login_manager
 
-@login_manager.user_loader
-def load_user(user_id):
-    return User.query.get(int(user_id))
-
 orders_items = db.Table('orders_items', 
     db.Column('order_id', db.Integer, db.ForeignKey('order.id'), primary_key=True),
     db.Column('item_id', db.Integer, db.ForeignKey('item.id'), primary_key=True)
@@ -33,19 +29,6 @@ class Role(db.Model):
         if self.permissions is None:
             self.permissions = 0
 
-    def add_permission(self, perm):
-        if not self.has_permission(perm):
-            self.permissions += perm
-
-    def remove_permission(self,perm):
-        if self.has_permission(perm):
-            self.permissions -= perm
-
-    def reset_permissions(self):
-        self.permissions = 0
-
-    def has_permission(self, perm):
-        return self.permissions & perm == perm
 
     @staticmethod
     def insert_roles():
@@ -53,7 +36,7 @@ class Role(db.Model):
             'User' : [Permission.SCHEDULE, Permission.COMMENT],
             'Staff' : [Permission.SCHEDULE, Permission.COMMENT, Permission.REGISTRATION],
             'TournamentManager' : [Permission.SCHEDULE, Permission.COMMENT, Permission.TOURNAMENT],
-            'Admin' : [Permission.SCHEDULE, Permission.COMMENT, Permission.TOURNAMENT, Permission.REGISTRATION]
+            'Administrator' : [Permission.SCHEDULE, Permission.COMMENT, Permission.TOURNAMENT, Permission.REGISTRATION, Permission.ADMIN],
         }
         default_role = 'User'
         for r in roles:
@@ -67,19 +50,31 @@ class Role(db.Model):
             db.session.add(role)
         db.session.commit()
 
+    def add_permission(self, perm):
+        if not self.has_permission(perm):
+            self.permissions += perm
+
+    def remove_permission(self, perm):
+        if self.has_permission(perm):
+            self.permissions -= perm
+
+    def reset_permissions(self):
+        self.permissions = 0
+
+    def has_permission(self, perm):
+        return self.permissions & perm == perm
 
     def __repr__(self):
         return '<Role %r>' % self.name
+
 
 class User(UserMixin, db.Model):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(64), unique=True, index=True)
     name = db.Column(db.String(64), index=True)
-    
     role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
     password_hash = db.Column(db.String(128))
-    
     country = db.Column(db.String(64))
     club = db.Column(db.String(64), nullable=True)
     #dateofbirth = db.Column(db.Date)
@@ -165,15 +160,15 @@ class User(UserMixin, db.Model):
         db.session.add(self)
         return True
 
-
     def can(self, perm):
         return self.role is not None and self.role.has_permission(perm)
 
     def is_administrator(self):
+        print(self.role, self.role_id)
         return self.can(Permission.ADMIN)
     
     def __repr__(self):
-        return '<User %r>' % self.username
+        return '<User %r>' % self.name
 
 class AnonymousUser(AnonymousUserMixin):
     def can(self, permissions):
@@ -277,3 +272,6 @@ class Ruleset(db.Model):
     def __repr__(self):
         return '<Ruleset %r>' % self.name
 
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
