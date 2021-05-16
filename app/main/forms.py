@@ -30,3 +30,7 @@ class EditProfileAdminForm(FlaskForm):
             raise ValidationError('Email already registered')
 
         
+class PostForm(FlaskForm):
+    postclass = SelectField('Orgparts', coerce=int)
+    body = TexAreaField('Text', validators=[DataRequired()])
+    submit = SubmitField('Submit')

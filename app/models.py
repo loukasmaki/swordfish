@@ -3,7 +3,7 @@ from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from flask import current_app
 from flask_login import UserMixin, AnonymousUserMixin
 from . import db, login_manager
-
+import datetime
 orders_items = db.Table('orders_items', 
     db.Column('order_id', db.Integer, db.ForeignKey('order.id'), primary_key=True),
     db.Column('item_id', db.Integer, db.ForeignKey('item.id'), primary_key=True)
@@ -82,7 +82,7 @@ class User(UserMixin, db.Model):
     #nextofkinphoneemail = db.Column(db.String(64), nullable=True)
 
     confirmed = db.Column(db.Boolean, default=False)
-    
+    posts = db.relationship('Post', bakref='author', lazy='dynamic')
     #order = db.relationship('Order', backref='user')
 
     def __init__(self, **kwargs):
@@ -179,6 +179,41 @@ class AnonymousUser(AnonymousUserMixin):
 
 login_manager.anonymous_user = AnonymousUser
 
+
+class Post(db.Model):
+    __tablename__='posts'
+    id = db.Column(db.Integer, primary_key=True)
+    body = db.Column(db.Text)
+    timestamp =db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+
+class Orgpart(db.Model):
+    __tablename__='orgparts'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(64))
+
+    @staticmethod
+    def insert_orgpart(): 
+        orgparts = [
+            'Tournament',
+            'Workshop',
+            'Instructor',
+            'Venue',
+            'Rules',
+            'Other_info',
+            'Event',
+
+        ]
+
+        for part in org_parts:
+            orgpart = Orgpart.query.filter_by(name=part).first()
+                if orpart is None:
+                    orgpart = Orgpart(name=part)
+                db.session.add(orgpart)
+            db.session.commit()
+
+    def addnew
+
 class Event(db.Model):
     __tablename__ = 'event'
     id = db.Column(db.Integer, primary_key=True)
@@ -217,6 +252,7 @@ class Workshops(db.Model):
     description = db.Column(db.Text)
     body = db.Column(db.Text)
     event_id = db.Column(db.Integer, db.ForeignKey('event.id'))
+    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     
 
     def __repr__(self):
