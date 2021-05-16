@@ -10,7 +10,16 @@
         <li><a href="{{ url_for( 'auth.change_email_request' ) }}">Change Email</a></li>
         <li><a href="{{ url_for( 'auth.change_password' )}}">Change Password</a></li>
         <li><a href="{{ url_for( 'main.edit_profile' )}}">Edit Profile</a></li>
+        <li><p>Role: {{ user.role }}</p></li>
+        
 
     </ul>
+    {% if current_user.is_administrator() %}
+    <a class="btn btn-danger"
+        href="{{ url_for('.edit_profile_admin', id=user.id) }}">
+        Edit Profile [Admin]
+    </a>
+    {% endif %}
+
 </div>
 {% endblock %}
