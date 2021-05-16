@@ -11,7 +11,7 @@
 </div>
 <div>
     {% if current_user.is_authenticated %}
-        <p>Hello, {{ current_user.username.capitalize() }}</p>
+        <p>Hello, {{ current_user.name.capitalize() }}</p>
     {% endif %}
 </div>
 {% endblock %}
