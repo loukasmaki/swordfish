@@ -188,7 +188,7 @@ class Event(db.Model):
     sleepingonsite = db.Column(db.Boolean)
     tournament = db.relationship('Tournament', backref='event')
     workshop = db.relationship('Workshops', backref='event')
-    
+    body = db.Column(db.Text)
 
     def __repr__(self):
         return '<Event %r>' % self.name
@@ -201,6 +201,7 @@ class Tournament(db.Model):
     maxparticipants = db.Column(db.Integer)
     participants = db.Column(db.Integer)
     event_id = db.Column(db.Integer, db.ForeignKey('event.id'))
+    body = db.Column(db.Text)
     
 
     def __repr__(self):
@@ -214,6 +215,7 @@ class Workshops(db.Model):
     name = db.Column(db.String(64), unique=True)
     year = db.Column(db.Date)
     description = db.Column(db.Text)
+    body = db.Column(db.Text)
     event_id = db.Column(db.Integer, db.ForeignKey('event.id'))
     
 
@@ -224,7 +226,7 @@ class Instructors(db.Model):
     __tablename__ = 'instructors'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), unique=True)
-    bio = db.Column(db.Text)
+    body = db.Column(db.Text)
 
     def __repr__(self):
         return '<Instructor %r>' % self.name
