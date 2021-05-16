@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SelectField, BooleanField, SubmitField
+from wtforms import StringField, SelectField, BooleanField, SubmitField, TextAreaField
 from wtforms.validators import DataRequired, Length, Email, Regexp, EqualTo
 from wtforms import ValidationError
 from ..models import User, Role
@@ -32,5 +32,5 @@ class EditProfileAdminForm(FlaskForm):
         
 class PostForm(FlaskForm):
     postclass = SelectField('Orgparts', coerce=int)
-    body = TexAreaField('Text', validators=[DataRequired()])
+    body = TextAreaField('Text', validators=[DataRequired()])
     submit = SubmitField('Submit')

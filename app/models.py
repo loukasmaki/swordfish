@@ -3,7 +3,7 @@ from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from flask import current_app
 from flask_login import UserMixin, AnonymousUserMixin
 from . import db, login_manager
-import datetime
+from datetime import datetime
 orders_items = db.Table('orders_items', 
     db.Column('order_id', db.Integer, db.ForeignKey('order.id'), primary_key=True),
     db.Column('item_id', db.Integer, db.ForeignKey('item.id'), primary_key=True)
@@ -82,7 +82,7 @@ class User(UserMixin, db.Model):
     #nextofkinphoneemail = db.Column(db.String(64), nullable=True)
 
     confirmed = db.Column(db.Boolean, default=False)
-    posts = db.relationship('Post', bakref='author', lazy='dynamic')
+    posts = db.relationship('Post', backref='author', lazy='dynamic')
     #order = db.relationship('Order', backref='user')
 
     def __init__(self, **kwargs):
@@ -188,31 +188,30 @@ class Post(db.Model):
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
 class Orgpart(db.Model):
-    __tablename__='orgparts'
+    __tablename__ = 'orgparts'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64))
+    visible = db.Column(db.Boolean, default=True)
 
     @staticmethod
     def insert_orgpart(): 
-        orgparts = [
-            'Tournament',
-            'Workshop',
-            'Instructor',
-            'Venue',
-            'Rules',
-            'Other_info',
-            'Event',
+        orgparts = {
+            'Tournament': [True],
+            'Workshop' : [True],
+            'Instructor': [True],
+            'Venue' : [True],
+            'Rules' : [True],
+            'Other_info' : [False],
+            'Event' : [True],
 
-        ]
+        }
 
-        for part in org_parts:
+        for part in orgparts:
             orgpart = Orgpart.query.filter_by(name=part).first()
-                if orpart is None:
-                    orgpart = Orgpart(name=part)
-                db.session.add(orgpart)
-            db.session.commit()
-
-    def addnew
+            if orgpart is None:
+                orgpart = Orgpart(name=part)
+            db.session.add(orgpart)
+        db.session.commit()
 
 class Event(db.Model):
     __tablename__ = 'event'
