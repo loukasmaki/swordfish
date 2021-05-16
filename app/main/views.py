@@ -88,4 +88,4 @@ def edit_profile():
     #form.name.data = current_user.name
     form.country.data = current_user.country
     form.club.data = current_user.club
-    return render_template('edit_profile.html', form=form)
+    return render_template('main/edit_profile.html', form=form)
