@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %} Admin posts{% endblock %}
+
+{% block page_content %}
+
+<div>
+    <h3>Editor</h3>
+    {% if current_user.can(Permission.WRITE) %}
+    {{ wtf.quick_form(form) }}
+    {% endif %}
+</div>
+
+{% for post in posts %}
+    <h3>{{ post.title }}</h3>
+    <p>{{ post.type_id }}</p>
+    {% include '_posts.html' %}
+{% endfor %}
+    
+
+{% endblock %}

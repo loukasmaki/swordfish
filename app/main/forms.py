@@ -2,8 +2,9 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, SelectField, BooleanField, SubmitField, TextAreaField
 from wtforms.validators import DataRequired, Length, Email, Regexp, EqualTo
 from wtforms import ValidationError
-from ..models import User, Role
-
+from ..models import User, Role, Orgpart
+from wtforms.ext.sqlalchemy.fields import QuerySelectField
+from .. import db
 
 class EditProfileForm(FlaskForm):
     name = StringField('Name', validators=[Length(0, 64)])
@@ -31,7 +32,15 @@ class EditProfileAdminForm(FlaskForm):
 
         
 class PostForm(FlaskForm):
+
+    def type_choices():
+        return db.session.query(Orgpart).all()
+
+
+
     title = StringField('Title', validators=[DataRequired()])
-    type = SelectField('Orgpart', coerce=int)
+    orgpart = QuerySelectField('Category', validators=[DataRequired()], 
+                                query_factory=type_choices)
     body = TextAreaField('Text', validators=[DataRequired()])
     submit = SubmitField('Submit')
+

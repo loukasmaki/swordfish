@@ -35,6 +35,9 @@
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ current_user.name.capitalize() }}<b class="caret"></b></a>
                     <ul class="dropdown-menu">
                         <li><a href="{{ url_for( 'main.user', id=current_user.id) }}">Account</a></li>
+                        {% if current_user.can(Permission.WRITE) %}
+                        <li><a href="{{ url_for('main.posts') }}">Write Post</a></li>
+                        {% endif %}
                         <li><a href="{{ url_for('auth.change_email_request')}}">Change Email</a></li>
                         <li><a href="{{ url_for('auth.logout') }}">Log Out</a></li>
                     </ul>

@@ -215,6 +215,12 @@ class Orgpart(db.Model):
             db.session.add(orgpart)
         db.session.commit()
 
+    def __repr__(self):
+        return '%r' % self.name
+
+    def __str__(self):
+        return self.name
+
 class Event(db.Model):
     __tablename__ = 'event'
     id = db.Column(db.Integer, primary_key=True)

@@ -1,9 +1,9 @@
 from flask import render_template, session, redirect, url_for, flash
 from flask_login import login_required, current_user
 from . import main
-from .forms import EditProfileAdminForm, EditProfileForm
+from .forms import EditProfileAdminForm, EditProfileForm, PostForm
 from .. import db
-from ..models import Permission, User, Role
+from ..models import Permission, User, Role, Post, Orgpart
 from app.decorators import admin_required
 
 
@@ -115,6 +115,7 @@ def edit_profile_admin(id):
         return redirect(url_for('.user', id=user.id))
     form.email.data = user.email
     form.name.data = user.name
+    print(user.role.id)
     form.role.data = user.role_id
     form.confirmed.data = user.confirmed
     form.country.data = user.country
@@ -126,10 +127,17 @@ def edit_profile_admin(id):
 @admin_required
 def posts():
     form = PostForm()
+    
     if current_user.can(Permission.WRITE) and form.validate_on_submit():
-        post = Post(body=form.body.data, author=current_user._get_current_object())
+        print("Heyooo!")
+        print(form.orgpart.data)
+        post = Post(body=form.body.data, 
+                    author=current_user._get_current_object(),
+                    title=form.title.data,
+                    type_id=form.orgpart.data)
         db.session.add(post)
         db.session.commit()
         return redirect(url_for('.posts'))
     posts = Post.query.order_by(Post.timestamp.desc()).all()
-    return render_template('main/posts.html', form=form, posts=posts)
+    
+    return render_template('main/admin_post.html', form=form, posts=posts)
