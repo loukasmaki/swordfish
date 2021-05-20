@@ -31,6 +31,7 @@ class EditProfileAdminForm(FlaskForm):
 
         
 class PostForm(FlaskForm):
-    postclass = SelectField('Orgparts', coerce=int)
+    title = StringField('Title', validators=[DataRequired()])
+    type = SelectField('Orgpart', coerce=int)
     body = TextAreaField('Text', validators=[DataRequired()])
     submit = SubmitField('Submit')

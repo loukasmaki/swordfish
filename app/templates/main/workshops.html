@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block title %} Workshops{% endblock %}
+
+{% block page_content %}
+
+{% for each post in posts %}
+    <h3>{{ post.title }}</h3>
+    <p>{{ post.type_id }}</p>
+    {% include '_posts.html' %}
+    
+
+{% endblock %}

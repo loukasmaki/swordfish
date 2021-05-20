@@ -11,7 +11,7 @@ orders_items = db.Table('orders_items',
 
 class Permission:
     SCHEDULE = 1
-    COMMENT = 2
+    WRITE = 2
     REGISTRATION = 4
     TOURNAMENT = 8
     ADMIN = 16
@@ -183,9 +183,11 @@ login_manager.anonymous_user = AnonymousUser
 class Post(db.Model):
     __tablename__='posts'
     id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(128))
     body = db.Column(db.Text)
     timestamp =db.Column(db.DateTime, index=True, default=datetime.utcnow)
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    type_id = db.Column(db.Integer, db.ForeignKey('orgparts.id'))
 
 class Orgpart(db.Model):
     __tablename__ = 'orgparts'

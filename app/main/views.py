@@ -3,7 +3,7 @@ from flask_login import login_required, current_user
 from . import main
 from .forms import EditProfileAdminForm, EditProfileForm
 from .. import db
-from ..models import User, Role
+from ..models import Permission, User, Role
 from app.decorators import admin_required
 
 
@@ -11,7 +11,8 @@ from datetime import datetime
 
 @main.route('/', methods=['GET'])
 def index():
-    return render_template('index.html', current_time=datetime.utcnow())
+    posts = Post.query.order_by(Post.timestamp.desc()).all()
+    return render_template('index.html', current_time=datetime.utcnow(), posts=posts)
 
 
 @main.route('/registration', methods=['GET', 'POST'])
@@ -44,6 +45,10 @@ def registration():
                             nextOfKinPhoneEmail=session.get('nextOfKinPhoneEmail'), 
                             dateOfBirth=session.get('dateOfBirth'))
 
+@main.route('/workshops', methods=['GET'])
+def workshops():
+    workshops = Post.query.filter_by(type_id=2)
+    return render_template('main/workshops.html') 
 
 @main.route('/fights', methods=['GET'])
 def fights():
@@ -116,3 +121,15 @@ def edit_profile_admin(id):
     form.club.data = user.club
     return render_template('main/edit_profile.html', form=form, user=user)
 
+@main.route('/posts', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def posts():
+    form = PostForm()
+    if current_user.can(Permission.WRITE) and form.validate_on_submit():
+        post = Post(body=form.body.data, author=current_user._get_current_object())
+        db.session.add(post)
+        db.session.commit()
+        return redirect(url_for('.posts'))
+    posts = Post.query.order_by(Post.timestamp.desc()).all()
+    return render_template('main/posts.html', form=form, posts=posts)
