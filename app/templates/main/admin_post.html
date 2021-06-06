@@ -11,12 +11,24 @@
     {{ wtf.quick_form(form) }}
     {% endif %}
 </div>
-
-{% for post in posts %}
-    <h3>{{ post.title }}</h3>
-    <p>{{ post.type_id }}</p>
+<div class="post-tab">
+    <ul class="nav nav-tabs">
+        <li></li>
+    </ul>
     {% include '_posts.html' %}
-{% endfor %}
+</div>
+{% if pagination %}
+<div class="pagination">
+    {{ macros.pagination_widget(pagination, '.index') }}
+</div>
+
+    
+{% endif %}
     
 
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+{{ pagedown.include_pagedown() }}
 {% endblock %}

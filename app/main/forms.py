@@ -34,7 +34,7 @@ class EditProfileAdminForm(FlaskForm):
 class PostForm(FlaskForm):
 
     def type_choices():
-        return db.session.query(Orgpart).all()
+        return db.session.query(Orgpart)
 
 
 

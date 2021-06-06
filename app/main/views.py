@@ -129,12 +129,10 @@ def posts():
     form = PostForm()
     
     if current_user.can(Permission.WRITE) and form.validate_on_submit():
-        print("Heyooo!")
-        print(form.orgpart.data)
         post = Post(body=form.body.data, 
                     author=current_user._get_current_object(),
                     title=form.title.data,
-                    type_id=form.orgpart.data)
+                    type_id=form.orgpart.data.id)
         db.session.add(post)
         db.session.commit()
         return redirect(url_for('.posts'))
