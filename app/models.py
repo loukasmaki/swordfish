@@ -249,6 +249,9 @@ class Tournament(db.Model):
     def __repr__(self):
         return '<Tournament %r>' % self.name
 
+    def __str__(self):
+        return self.name
+
 
 
 class Workshops(db.Model):

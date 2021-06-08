@@ -1,10 +1,12 @@
+from types import MethodDescriptorType
 from flask import render_template, session, redirect, url_for, flash
 from flask_login import login_required, current_user
 from . import main
-from .forms import EditProfileAdminForm, EditProfileForm, PostForm
+from .forms import EditProfileAdminForm, EditProfileForm, JoinEventForm, PostForm
 from .. import db
-from ..models import Permission, User, Role, Post, Orgpart
+from ..models import Permission, Tournament, User, Role, Post, Orgpart
 from app.decorators import admin_required
+import stripe 
 
 
 from datetime import datetime
@@ -67,11 +69,6 @@ def confirmation():
 @main.route('/information', methods=['GET'])
 def information():
     return render_template('main/information.html')
-
-
-@main.route('/shop')
-def shop():
-    return render_template('main/shop.html')
 
 @main.route('/user/<int:id>')
 @login_required
@@ -139,3 +136,67 @@ def posts():
     posts = Post.query.order_by(Post.timestamp.desc()).all()
     
     return render_template('main/admin_post.html', form=form, posts=posts)
+
+@main.route('/join-event', methods=['GET', 'POST'])
+def join_event():
+    form = JoinEventForm()
+
+    if form.validate_on_submit():
+        eventRegistration = EventRegistration(
+        name = form.name.data,
+        email = form.email.data,
+        date_of_birth = form.date_of_birth.data,
+        tournament1 = form.tournament1.data,
+        tournament2 = form.tournament2.data,
+        confirmed = False
+        )
+        db.session.add(eventRegistration)
+        db.session.commit()
+        return redirect(url_for('main.payment'))
+
+    return render_template('join-event.html', form=form)
+
+
+@main.route('/payment', methods=['GET', 'POST'])
+#SOmething that verifys it's the current user session here
+def payment():
+    form = Payment()
+
+    if form.validate_on_submit():
+        payment_session = PaymentSession(
+
+            paymentmethod = form.paymentmethod.data,
+            
+
+
+        )
+
+        db.session.add(payment_session)
+        db.session.commit()
+        return redirect(url_for('main.registration_confirmation'))
+
+    return render_template('payment.html', form=form)
+
+@main.route('/webshop', methods=['GET', 'POST'])
+def webshop():
+    session = stripe.checkout.Session.create(
+        payment_method_types=['card'],
+        line_items=[{
+            'price': 'price_1J02EpCA4AXKnreiLZQq2glE',
+            'quantity': 1,
+        }],
+        mode = 'payment',
+        success_url=url_for('.success', _external=True) + '?session_id={CHECKOUT}http://127.0.0.1:5000/success?session_id={CHECKOUT_SESSION}',
+        cancel_url=url_for('.webshop', _external=True)
+
+    )
+    return render_template('main/webshop.html', checkout_session_id=session['id'])
+
+@main.route('/success', methods=['GET'])
+def success():
+    return render_template('success.html')
+
+
+
+
+

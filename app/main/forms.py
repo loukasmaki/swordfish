@@ -1,8 +1,8 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SelectField, BooleanField, SubmitField, TextAreaField
+from wtforms import StringField, SelectField, BooleanField, SubmitField, TextAreaField, DateField
 from wtforms.validators import DataRequired, Length, Email, Regexp, EqualTo
 from wtforms import ValidationError
-from ..models import User, Role, Orgpart
+from ..models import User, Role, Orgpart, Tournament
 from wtforms.ext.sqlalchemy.fields import QuerySelectField
 from .. import db
 
@@ -44,3 +44,15 @@ class PostForm(FlaskForm):
     body = TextAreaField('Text', validators=[DataRequired()])
     submit = SubmitField('Submit')
 
+
+class JoinEventForm(FlaskForm):
+    def tournaments():
+        return db.session.query(Tournament)
+
+    name = StringField('Name', validators=[DataRequired(), Length(1, 64)])
+    email = StringField('Email', validators=[DataRequired(), Length(1,64), Email()])
+    date_of_birth = DateField('Date of birth', format='%Y-%m-%d', validators=[DataRequired()])
+    tournament1 = QuerySelectField('Tournament 1', validators=[DataRequired()], query_factory=tournaments)
+    tournament2 =  QuerySelectField('Tournament 2', validators=[DataRequired()], query_factory=tournaments)
+    submit = SubmitField('Submit')
+    

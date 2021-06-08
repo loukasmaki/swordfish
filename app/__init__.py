@@ -7,6 +7,7 @@ from flask_login import LoginManager
 from flask_pagedown import PageDown
 from config import config
 from dotenv import load_dotenv
+import stripe
 
 load_dotenv()
 
@@ -18,6 +19,9 @@ pagedown = PageDown()
 
 login_manager = LoginManager()
 login_manager.login_view = 'auth.view'
+
+
+
 
 def create_app(config_name):
     #config_name = 'development'
@@ -31,6 +35,8 @@ def create_app(config_name):
     db.init_app(app)
     login_manager.init_app(app)
     pagedown.init_app(app)
+
+    stripe.api_key = app.config['STRIPE_SECRET_KEY']
 
     # attach routes and custome error pages here
 
