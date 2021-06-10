@@ -23,6 +23,7 @@ login_manager.login_view = 'auth.view'
 
 
 
+
 def create_app(config_name):
     #config_name = 'development'
     app = Flask(__name__)

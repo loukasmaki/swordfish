@@ -1,15 +1,19 @@
 from types import MethodDescriptorType
-from flask import render_template, session, redirect, url_for, flash
+from flask import render_template, session, redirect, url_for, flash, current_app, make_response
 from flask_login import login_required, current_user
 from . import main
 from .forms import EditProfileAdminForm, EditProfileForm, JoinEventForm, PostForm
 from .. import db
-from ..models import Permission, Tournament, User, Role, Post, Orgpart
+from ..models import Permission, Tournament, User, Role, Post, Orgpart, EventRegistration
 from app.decorators import admin_required
 import stripe 
 
-
 from datetime import datetime
+
+@current_app.after_request
+def add_securiy_headers(resp):
+    resp.headers['Content-Security-Policy']='default-src \'self\''
+    return resp
 
 @main.route('/', methods=['GET'])
 def index():
@@ -179,6 +183,7 @@ def payment():
 
 @main.route('/webshop', methods=['GET', 'POST'])
 def webshop():
+    
     session = stripe.checkout.Session.create(
         payment_method_types=['card'],
         line_items=[{
@@ -186,17 +191,13 @@ def webshop():
             'quantity': 1,
         }],
         mode = 'payment',
-        success_url=url_for('.success', _external=True) + '?session_id={CHECKOUT}http://127.0.0.1:5000/success?session_id={CHECKOUT_SESSION}',
+        success_url=url_for('.success', _external=True) + '?session_id={CHECKOUT}http://127.0.0.1:5000/success?session_id={CHECKOUT_SESSION_ID}',
         cancel_url=url_for('.webshop', _external=True)
 
     )
-    return render_template('main/webshop.html', checkout_session_id=session['id'])
+    print(session['id'])
+    return render_template('main/webshop.html', checkout_public_key=current_app.config['STRIPE_PUBLIC_KEY'], checkout_session_id=session['id'])
 
 @main.route('/success', methods=['GET'])
 def success():
     return render_template('success.html')
-
-
-
-
-

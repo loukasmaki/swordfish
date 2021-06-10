@@ -15,3 +15,9 @@ def permission_required(permission):
 
 def admin_required(f):
     return permission_required(Permission.ADMIN)(f)
+
+
+@current_app.after_request
+def add_securiy_headers(resp):
+    resp.headers['Content-Security-Policy']='default-src \'self\''
+    return resp

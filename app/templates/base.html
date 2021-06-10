@@ -6,6 +6,7 @@
 {{ super() }}
 <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
 <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' cdnjs.cloudflare.com js.stripe.com"> 
 {% endblock %}
 
 {% block navbar %}

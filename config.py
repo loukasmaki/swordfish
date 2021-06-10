@@ -12,7 +12,7 @@ class Config:
     EVENT_MAIL_SENDER = 'Swordfish Admin <devporco@gmail.com>'
     EVENT_ADMIN = os.environ.get('EVENT_ADMIN')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    STRIPE_PUBLISHABLE_KEY = os.environ.get('STRIPE_PUBLISHABLE_KEY')
+    STRIPE_PUBLIC_KEY = os.environ.get('STRIPE_PUBLIC_KEY')
     STRIPE_SECRET_KEY = os.environ.get('STRIPE_SECRET_KEY')
 
 
