@@ -8,5 +8,5 @@ button.addEventListener('click', event => {
         sessionId: checkout_session_id
     }).then(function (result) {
 
-    }
+    })
 })

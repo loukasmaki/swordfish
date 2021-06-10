@@ -10,10 +10,6 @@ import stripe
 
 from datetime import datetime
 
-@current_app.after_request
-def add_securiy_headers(resp):
-    resp.headers['Content-Security-Policy']='default-src \'self\''
-    return resp
 
 @main.route('/', methods=['GET'])
 def index():
@@ -200,4 +196,4 @@ def webshop():
 
 @main.route('/success', methods=['GET'])
 def success():
-    return render_template('success.html')
+    return render_template('/main/success.html')
