@@ -179,6 +179,7 @@ def payment():
 
 @main.route('/webshop', methods=['GET', 'POST'])
 def webshop():
+    '''
     
     session = stripe.checkout.Session.create(
         payment_method_types=['card'],
@@ -191,9 +192,30 @@ def webshop():
         cancel_url=url_for('.webshop', _external=True)
 
     )
-    print(session['id'])
-    return render_template('main/webshop.html', checkout_public_key=current_app.config['STRIPE_PUBLIC_KEY'], checkout_session_id=session['id'])
+    '''
+    
+    return render_template('main/webshop.html', #checkout_public_key=current_app.config['STRIPE_PUBLIC_KEY'], 
+                                                 #checkout_session_id=session['id']
+                         )
 
 @main.route('/success', methods=['GET'])
 def success():
     return render_template('/main/success.html')
+
+
+@main.route('/stripe_pay')
+def stripe_pay():
+    session = stripe.checkout.Session.create(
+        payment_method_types=['card'],
+        line_items=[{
+            'price': 'price_1J02EpCA4AXKnreiLZQq2glE',
+            'quantity': 1,
+        }],
+        mode = 'payment',
+    success_url=url_for('.success', _external=True) + '?session_id={CHECKOUT}http://127.0.0.1:5000/success?session_id={CHECKOUT_SESSION_ID}',
+    cancel_url=url_for('.webshop', _external=True),
+
+    )
+
+    return{'checkout_session_id': session['id'], 
+        'checkout_public_key': current_app.config['STRIPE_PUBLIC_KEY']}
