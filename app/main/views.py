@@ -1,5 +1,5 @@
 from types import MethodDescriptorType
-from flask import render_template, session, redirect, url_for, flash, current_app, make_response
+from flask import render_template, session, redirect, url_for, flash, current_app, request, abort
 from flask_login import login_required, current_user
 from . import main
 from .forms import EditProfileAdminForm, EditProfileForm, JoinEventForm, PostForm
@@ -57,8 +57,8 @@ def fights():
     return render_template('main/fights.html')
 
 @main.route('/participants', methods=['GET'])
-def participants(event):
-    participants = Tournament.query.filter_by(event=event)
+def participants():
+    participants = []
     return render_template('main/participants.html', participants=participants)
 
 @main.route('/confirmation', methods=['GET'])
@@ -177,7 +177,7 @@ def payment():
 
     return render_template('payment.html', form=form)
 
-@main.route('/webshop', methods=['GET', 'POST'])
+@main.route('/webshop')
 def webshop():
     '''
     
@@ -205,6 +205,7 @@ def success():
 
 @main.route('/stripe_pay')
 def stripe_pay():
+    print('IN STRIPE_PAY FUNCTION')
     session = stripe.checkout.Session.create(
         payment_method_types=['card'],
         line_items=[{
@@ -212,10 +213,41 @@ def stripe_pay():
             'quantity': 1,
         }],
         mode = 'payment',
-    success_url=url_for('.success', _external=True) + '?session_id={CHECKOUT}http://127.0.0.1:5000/success?session_id={CHECKOUT_SESSION_ID}',
+    success_url=url_for('.success', _external=True) + '?session_id={CHECKOUT_SESSION_ID}',
     cancel_url=url_for('.webshop', _external=True),
 
     )
 
-    return{'checkout_session_id': session['id'], 
-        'checkout_public_key': current_app.config['STRIPE_PUBLIC_KEY']}
+    return {'checkout_session_id': session['id'], 
+            'checkout_public_key': current_app.config['STRIPE_PUBLIC_KEY']}
+
+@main.route('/stripe_webhook', methods=['POST'])
+def stripe_webhook():
+    print('WEBHOOK CALLED')
+
+    if request.content_length > 1024 * 1024:
+        print('REQUEST TO BIG')
+        abort(400)
+    payload = request.get_data()
+    sig_header = request.environ.get('HTTP_STRIPE_SIGNATURE')
+    endpoint_secret = 'whsec_VjrJNq0sh24UYFYfXuOOsZmZjlP3XEBU'
+    event = None
+
+    try:
+        event = stripe.Webhook.construct_event(
+            payload, sig_header, endpoint_secret
+        )
+    except ValueError as e:
+        # Invalid Payload
+        print('INVALID PAYLOAD')
+        return {}, 400
+    except stripe.errorSignatureVerificationError as e:
+        print('INVALID SIGNATURE')
+        return {}, 400
+
+    if event['type'] == 'checkout.session.completed':
+        session = event['data']['object']
+        print('Success!!')
+        print(session)
+
+    return {},

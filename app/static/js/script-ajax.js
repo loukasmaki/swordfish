@@ -1,6 +1,7 @@
 const button = document.querySelector('#buy_now_btn');
 
 button.addEventListener('click', event => {
+    console.log('I AM IN THE EVENT LISTENER')
     fetch('/stripe_pay')
     .then((result) => { return result.json(); })
     .then((data) => {
