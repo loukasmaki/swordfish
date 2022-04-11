@@ -4,7 +4,7 @@ from flask_login import login_required, current_user
 from . import main
 from .forms import EditProfileAdminForm, EditProfileForm, JoinEventForm, PostForm
 from .. import db
-from ..models import Permission, Tournament, User, Role, Post, Orgpart, EventRegistration
+from ..models import Permission, Tournament, User, Role, Post, Orgpart, EventRegistration, Product
 from app.decorators import admin_required
 import stripe 
 
@@ -193,7 +193,11 @@ def webshop():
 
     )
     '''
-    
+    def products():
+        product = Product.Query
+        if product.active == True:
+
+
     return render_template('main/webshop.html', #checkout_public_key=current_app.config['STRIPE_PUBLIC_KEY'], 
                                                  #checkout_session_id=session['id']
                          )

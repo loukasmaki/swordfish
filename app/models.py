@@ -278,7 +278,7 @@ class Instructors(db.Model):
         return '<Instructor %r>' % self.name
 
 
-class Item(db.Model):
+class Product(db.Model):
     __tablename__ = 'item'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), unique=True)
