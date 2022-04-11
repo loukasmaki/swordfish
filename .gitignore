@@ -4,3 +4,5 @@ migrations/
 venv/
 .env
 stripe/
+.deployment
+.vscode
