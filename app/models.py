@@ -294,7 +294,7 @@ class Orders(db.Model):
     __tablename__ = 'order'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), unique=True)
-    items = db.relationship('Item', secondary=orders_items, lazy='subquery', backref=db.backref('orders', lazy=True))
+    product = db.relationship('Product', secondary=orders_items, lazy='subquery', backref=db.backref('orders', lazy=True))
     total = db.Column(db.Float)
     registration_order = db.Column(db.Boolean, default=False)
     event_id = db.Column(db.Integer, db.ForeignKey('event.id'))

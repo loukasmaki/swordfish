@@ -195,7 +195,7 @@ def webshop():
     '''
     def products():
         product = Product.Query
-        if product.active == True:
+       # if product.active == True:
 
 
     return render_template('main/webshop.html', #checkout_public_key=current_app.config['STRIPE_PUBLIC_KEY'], 
